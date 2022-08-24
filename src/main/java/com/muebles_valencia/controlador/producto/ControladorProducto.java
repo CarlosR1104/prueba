@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +43,9 @@ import com.muebles_valencia.servicios.productos.ServicioProducto;
 @CrossOrigin(origins = { "http://localhost:3000", "http://localhost:8080" , "null" , "**"})
 @RequestMapping("/producto")
 public class ControladorProducto {
-
+	
+	List<Producto> listaCategorias = new ArrayList<Producto>();
+	
 	@Autowired
 	private ServicioProducto servicioProducto;
 
@@ -161,20 +164,35 @@ public class ControladorProducto {
 
 	// Filtrar por categoria
 	@PostMapping("/filtrarCategoria/{categoria}")
-	public List<Categoria> filtrarCategoria(@PathVariable(value = "categoria") String categoria) {
+	public List<Producto> filtrarCategoria(@PathVariable(value = "categoria") String categoria) {
+		List<Producto> productos = null;
 		System.out.println("ENTRA EN CONTROLADOR PRODUCTO " + categoria);
-		List<Categoria> categorias = repoCategoria.findByNombreC(categoria);
-		System.out.println("csds"+categoria);
+		List<Categoria> categorias= repoCategoria.findByNombreC(categoria);
+		productos = (List<Producto>) servicioProducto.findAll();
+		
 		for (Categoria categoria2 : categorias) {
-			System.out.println(categoria2);
-			System.out.println(categorias);
+			
+			for (Producto producto : productos) {
+				System.out.println(categoria2);
+				System.out.println(producto.getId_categoria());
+				System.out.println(producto);
+				if (producto.getId_categoria() == categoria2) {
+					
+					listaCategorias.add(producto);
+					
+					System.out.println(listaCategorias);
+					
+				}
+			}
 		}
+		
 		if (categorias.isEmpty()) {
 			System.out.println("PRODUCTOS VACIOS");
-			return categorias;
+			listaCategorias.clear();
+			return listaCategorias;
 		}
-
-		return categorias;
+		System.out.println(listaCategorias);
+		return listaCategorias;
 
 	}
 
